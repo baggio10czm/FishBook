@@ -1,10 +1,9 @@
 from flask import render_template, request, redirect, url_for, flash
-from app.forms.auth import RegisterForm, LoginForm, ForgetPasswordForm, ResetPasswordForm
+from app.forms.auth import RegisterForm, LoginForm, EmailForm, ResetPasswordForm
 from . import web
 from flask_login import login_user, logout_user
 from app.models.base import db
 
-__author__ = '七月'
 
 from app.models.user import User
 
@@ -48,7 +47,7 @@ def login():
 
 @web.route('/reset/password', methods=['GET', 'POST'])
 def forget_password_request():
-    form = ForgetPasswordForm(request.form)
+    form = EmailForm(request.form)
     if request.method == 'POST':
         if form.validate():
             account_email = form.email.data
