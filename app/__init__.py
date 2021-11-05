@@ -13,7 +13,9 @@ def create_app():
     app.config.from_object('app.secure')
     app.config.from_object('app.setting')
 
+    # 注册蓝图
     register_blueprint(app)
+
     # 注册db
     db.init_app(app)
     # 注册flask_login
