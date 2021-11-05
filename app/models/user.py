@@ -60,9 +60,11 @@ class User(UserMixin, Base):
         # 索取者鱼豆必须大于1
         if self.beans < 1:
             return False
-        # 索取者每索取两本必须送出一本
+        # 索取者每索取两本必须先送出一本
+        # 成功送出去的书的数量
         success_gifts_count = Gift.query.filter_by(
             uid=self.id, launched=True).count()
+        # 成功收到书的数量
         success_receive_count = Drift.query.filter_by(
             requester_id=self.id, pending=PendingStatus.Success).count()
         return True if floor(success_receive_count / 2) <= floor(success_gifts_count) else False

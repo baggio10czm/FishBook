@@ -3,6 +3,7 @@
  Date: 2021/11/3
  Time: 12:05
 """
+from app.libs.enums import PendingStatus
 from app.models.base import Base
 from sqlalchemy import Column, Integer, String, SmallInteger
 
@@ -32,7 +33,18 @@ class Drift(Base):
     gifter_nickname = Column(String(20))
 
     # 状态,因为基类中有status了所以用pending
-    pending = Column('pending', SmallInteger, default=1)
+    # 不能与下面的同名所以改成 _pending
+    _pending = Column('pending', SmallInteger, default=1)
+
+    # 改写pending获取时是获得对应的枚举
+    @property
+    def pending(self):
+        return PendingStatus(self._pending)
+
+    # 改写pending设置时是设置的枚举对应的值
+    @pending.setter
+    def pending(self, status):
+        self._pending = status.value
 
     # requester_id = Column(Integer, ForeignKey('user.id'))
     # requester_id = relationship('User')

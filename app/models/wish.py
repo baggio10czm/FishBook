@@ -61,3 +61,4 @@ class Wish(Base):
         yushu_book = YuShuBook()
         yushu_book.search_by_isbn(self.isbn)
         return yushu_book.first
+

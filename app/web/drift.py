@@ -4,16 +4,18 @@ from sqlalchemy import or_, desc
 
 from . import web
 
-__author__ = '七月'
 
 from app.models.base import db
 
 from ..forms.book import DriftForm
 from ..libs.email import send_mail
+from ..libs.enums import PendingStatus
 from ..models.drift import Drift
 
 from ..models.gift import Gift
 from app.view_models.drift import DriftCollection
+from ..models.user import User
+from ..models.wish import Wish
 
 
 @web.route('/drift/<int:gid>', methods=['GET', 'POST'])
@@ -49,18 +51,51 @@ def pending():
 
 
 @web.route('/drift/<int:did>/reject')
+@login_required
 def reject_drift(did):
-    pass
+    """
+        拒绝请求，只有书籍赠送者才能拒绝请求
+        注意需要验证超权
+    """
+    with db.auto_commit():
+        # 用filter 因为查询了两个表(Gift,Drift)
+        drift = Drift.query.filter_by(gifter_id=current_user.id, id=did).first_or_404()
+        drift.pending = PendingStatus.Reject
+        requester = User.query.get_or_404(drift.requester_id)
+        requester.beans += 1
+    return redirect(url_for('web.pending'))
 
 
 @web.route('/drift/<int:did>/redraw')
+@login_required
 def redraw_drift(did):
-    pass
+    """
+        撤销所要书籍
+        防止超权 + requester_id=current_user.id
+    """
+    with db.auto_commit():
+        drift = Drift.query.filter_by(requester_id=current_user.id, id=did).first_or_404()
+        drift.pending = PendingStatus.Redraw
+        current_user.beans += 1
+    return redirect(url_for('web.pending'))
 
 
 @web.route('/drift/<int:did>/mailed')
 def mailed_drift(did):
-    pass
+    """
+        已邮寄对方索要的书籍
+    """
+    with db.auto_commit():
+        # 用filter 因为查询了两个表(Gift,Drift)
+        drift = Drift.query.filter_by(gifter_id=current_user.id, id=did).first_or_404()
+        drift.pending = PendingStatus.Success
+
+        gift = Gift.query.filter_by(id=drift.gift_id).first_or_404()
+        gift.launched = True
+
+        Wish.query.filter_by(uid=drift.requester_id,
+                             isbn=drift.isbn, launched=False).update({Wish.launched: True})
+        return redirect(url_for('web.pending'))
 
 
 def save_drift(drift_form, current_gift):

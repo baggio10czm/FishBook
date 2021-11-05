@@ -83,3 +83,4 @@ class Gift(Base):
             desc(cls.create_time)).limit(
             current_app.config['RECENT_BOOK_COUNT']).distinct().all()
         return recent_gifts
+

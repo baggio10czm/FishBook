@@ -34,6 +34,8 @@ class MyGifts:
         for wish_count in self.__wish_count_list:
             if gift.isbn == wish_count['isbn']:
                 count = wish_count['count']
+            # 这里的写法可以少写一个gift单体类(相比book,drift)
+            # 但这样的写法扩展性很差,只能适应万年不变的简单需求
             r = {
                 'id': gift.id,
                 'wishes_count': count,

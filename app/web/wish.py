@@ -8,6 +8,8 @@ __author__ = '七月'
 from app.models.base import db
 from app.models.wish import Wish
 # from ..view_models.wish import MyWishes
+from ..libs.email import send_mail
+from ..models.gift import Gift
 from ..view_models.trade import MyTrade
 
 
@@ -37,10 +39,34 @@ def save_to_wish(isbn):
 
 
 @web.route('/satisfy/wish/<int:wid>')
+@login_required
 def satisfy_wish(wid):
-    pass
+    """
+        向他人赠送此书
+        向想要这本书的人发送一封邮件
+        注意，这个接口需要做一定的频率限制
+        这接口比较适合写成一个ajax接口
+    """
+    wish = Wish.query.get_or_404(wid)
+    gift = Gift.query.filter_by(uid=current_user.id, isbn=wish.isbn).first()
+    if not gift:
+        flash('你还没有增加此书到赠送清单,添加前请确保自己可赠送此书!')
+    else:
+        send_mail(wish.user.email, '有人想送你一本书', 'email/satisify_wish.html',
+                  wish=wish, gift=gift)
+        flash('已向他/她发送了一封邮件,如果赠送成功,你将受到一个鱼漂!')
+    return redirect(url_for('web.book_detail', isbn=wish.isbn))
 
 
 @web.route('/wish/book/<isbn>/redraw')
+@login_required
 def redraw_from_wish(isbn):
-    pass
+    """
+    # 撤销心愿清单
+    :param isbn:
+    :return:
+    """
+    wish = Wish.query.filter_by(uid=current_user.id, isbn=isbn).first_or_404()
+    with db.auto_commit():
+        wish.delete()
+    return redirect(url_for('web.my_wish'))

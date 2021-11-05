@@ -8,6 +8,9 @@ from app.libs.enums import PendingStatus
 
 class DriftCollection:
     def __init__(self, drifts, current_user_id):
+        # 这样不用像book列出那么多属性
+        # 但这样会导致类的属性看起来不是一目了然
+        # 结合gift drift book 一般是推荐用book的方式写对象
         self.data = []
         self.__parse(drifts, current_user_id)
 
