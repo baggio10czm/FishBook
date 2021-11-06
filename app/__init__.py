@@ -16,8 +16,6 @@ def create_app():
     # 注册蓝图
     register_blueprint(app)
 
-    # 注册db
-    db.init_app(app)
     # 注册flask_login
     login_manager.init_app(app)
     # 给login_manager制定登录页面
@@ -27,6 +25,8 @@ def create_app():
     # 注册mail
     mail.init_app(app)
 
+    # 注册db
+    db.init_app(app)
     # 加这个解决"Missing user_loader or request_loader"报错.不知道为什么
     # @login_manager.user_loader
     # def load_user(user_id):
