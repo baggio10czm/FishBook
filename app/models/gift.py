@@ -33,11 +33,7 @@ class Gift(Base):
 
     @classmethod
     def get_user_gifts(cls, uid):
-        """
-        根据用户id查询他所有要赠送的礼物
-        :param uid:
-        :return:
-        """
+        """ 根据用户id查询他所有要赠送的礼物 """
         gifts = Gift.query.filter_by(uid=uid, launched=False).order_by(
             desc(Gift.create_time)).all()
         return gifts
@@ -47,8 +43,7 @@ class Gift(Base):
         from app.models.wish import Wish
         # 根据传入的一组isbn,到Wish表中查询出某个礼物的Wish心愿数量
         # filter_by 是调用filter 更强大灵活,可传入条件表达式
-        # func.count 得到数量
-        # mysql in 查询
+        # func.count 得到数量        # mysql in 查询
         count_list = db.session.query(func.count(Wish.id), Wish.isbn).filter(
             Wish.launched == False,
             Wish.isbn.in_(isbn_list),

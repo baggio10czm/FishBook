@@ -4,7 +4,7 @@ def is_isbn_or_key(word):
     判断参数是isbn or 关键字
     isbn 有两种情况:
     13位全部是数字 / 10位带'-'的数字
-    :return:
+    isdigit() 检测字符串是否都由数字组成
     """
     if len(word) == 13 and word.isdigit():
         return 'isbn'

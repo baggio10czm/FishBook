@@ -1,2 +1,2 @@
 .idea
-./app/config/secure.py
+/app/config/secure.py

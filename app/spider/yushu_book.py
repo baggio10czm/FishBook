@@ -1,4 +1,4 @@
-# 不能按照教程用http命名,不知道是不是和某包有冲突?
+# 不能按照教程用hLengthtp命名,不知道是不是和某包有冲突?
 from app.libs.httper import HTTP
 from flask import current_app
 
