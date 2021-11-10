@@ -18,7 +18,9 @@ from ..view_models.trade import MyTrade
 @login_required
 def my_gifts():
     uid = current_user.id
+    # 得到当前用户赠送的所有礼物
     gifts_of_mine = Gift.get_user_gifts(uid)
+    # 得到所有礼物的isbn集合
     isbn_list = [gift.isbn for gift in gifts_of_mine]
     wish_count_list = Gift.get_wish_count(isbn_list)
     view_model = MyTrade(gifts_of_mine, wish_count_list)
@@ -34,6 +36,8 @@ def save_to_gifts(isbn):
         with db.auto_commit():
             gift = Gift()
             gift.isbn = isbn
+            # flask_login 的 current_user 是用户对应的user模型
+            # 前后端分离项目,用户信息是保存在token中
             gift.uid = current_user.id
             current_user.beans += current_app.config['BEANS_UPLOAD_ONE_BOOK']
             db.session.add(gift)
@@ -52,10 +56,11 @@ def save_to_gifts(isbn):
 def redraw_from_gifts(gid):
     """
     # 撤销赠送清单
-    :param isbn:
+    :param gid:
     :return:
     """
     gift = Gift.query.filter_by(id=gid, launched=False).first_or_404()
+    # 先查询赠送是否在等待邮寄中
     hasDrift = Drift.query.filter_by(
         gift_id=gid, pending=PendingStatus.Waiting).first()
     if hasDrift:

@@ -29,9 +29,10 @@ def test1():
     print('~~~~~~~~~~~~~~~`')
     # request 进程隔离特性保证它的值不被影响(污染)
     # 而引入一个普通对象(n),它的值就很容易被污染
+    # session、g 也都是线程隔离的
     print(getattr(request, 'v', None))
     setattr(request, 'v', 99)
-    print('-------------')
+    print('------end-------')
     return ''
 
 
@@ -55,7 +56,7 @@ books = BookCollection()
 
 @web.route('/book/search')
 def search():
-    # request 必须是视图函数中才有用
+    # request 必须是视图函数(http请求)中才有用
     # request.args 默认是不可变的字典,使用 .to_dict()改变为正常字典
     # q = request.args['q']
     # page = request.args['page']
@@ -79,12 +80,13 @@ def search():
             # result = _BookViewModel.package_collection(result, q)
         # 用flask,jsonify格式化
         books.fill(yushu_book, q)
-        # 用lambda 处理所有需要处理的对象
-        # return json.dumps(books, default=lambda o: o.__dict__)
-        # jsonify 无法处理对象
+        # jsonify 无法处理对象 用__dict__转换，但对象还有对象就无法转换了
         # return jsonify(books.__dict__)
+        # 用lambda 处理所有需要处理的对象，支持递归
+        # return json.dumps(books, default=lambda o: o.__dict__)
     else:
         flash('搜索的关键字不符合要求,请<重装系统>^_^')
+    # 视图函数必须 return...
     return render_template('search_result.html', books=books)
     # 用自带的比较麻烦
     # return json.dumps(result), 200, {'content-type': 'application/json'}
@@ -92,6 +94,7 @@ def search():
 
 @web.route('/book/<isbn>/detail')
 def book_detail(isbn):
+    # 默认是既不在礼物清单也不在心愿清单
     has_in_gifts = False
     has_in_wishes = False
 

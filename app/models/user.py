@@ -14,16 +14,14 @@ from app.libs.helper import is_isbn_or_key
 from app.models.base import Base, db
 from sqlalchemy import Column, Integer, String, Boolean, Float
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
-
-
-# 继承UserMixin 可以不用初始化flask_login的很多方法
-# 如果表的主键 不是命名为id 就需要重写覆盖 get_id 方法
 from app.models.drift import Drift
 from app.models.gift import Gift
 from app.models.wish import Wish
 from app.spider.yushu_book import YuShuBook
 
 
+# 继承UserMixin 可以不用初始化flask_login的很多方法
+# 如果表的主键 命名不是id 就需要重写覆盖 get_id 方法
 class User(UserMixin, Base):
     # __tablename__ 改变表的名字默认是类的名字
     # __tablename__ = 'user1'
@@ -93,6 +91,7 @@ class User(UserMixin, Base):
         else:
             return False
 
+    # flask_login 设置保存的id
     # def get_id(self):
     #     return self.id
 
@@ -117,10 +116,7 @@ class User(UserMixin, Base):
 
     @property
     def summary(self):
-        """
-        用户简历
-        :return:
-        """
+        """ 用户简历 """
         return dict(
             nickname=self.nickname,
             beans=self.beans,

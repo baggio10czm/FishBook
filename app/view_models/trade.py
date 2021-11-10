@@ -38,7 +38,7 @@ class MyTrade:
     合并之后就没有了，不知道为什么……
     """
     def __init__(self, trades_of_mine, trade_count_list):
-        self.trades = []
+        # self.trades = []
         self.__trades_of_mine = trades_of_mine
         self.__trade_count_list = trade_count_list
         self.trades = self.__parse()

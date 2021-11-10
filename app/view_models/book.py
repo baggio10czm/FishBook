@@ -3,7 +3,7 @@
  Date: 2021/10/29
  Time: 14:03
 """
-from app.models.base import Base
+# from app.models.base import Base
 
 
 class BookViewModel:
@@ -38,11 +38,11 @@ class BookCollection:
         self.books = [BookViewModel(book) for book in yushu_book.books]
 
 
-# 老的面向过程的写法
+# 优化前面向过程的写法
 class _BookViewModel:
     # 描述特征(类变量/实例变量)
     # 行为(方法)
-    # 以下代码面向过程
+    # 以下代码是面向过程，不够理解面向对象
     @classmethod
     def package_single(cls, data, keyword):
         returned = {

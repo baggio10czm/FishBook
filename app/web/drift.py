@@ -11,7 +11,6 @@ from ..forms.book import DriftForm
 from ..libs.email import send_mail
 from ..libs.enums import PendingStatus
 from ..models.drift import Drift
-
 from ..models.gift import Gift
 from app.view_models.drift import DriftCollection
 from ..models.user import User
@@ -31,7 +30,7 @@ def send_drift(gid):
     form = DriftForm(request.form)
     if request.method == 'POST' and form.validate():
         save_drift(form, current_gift)
-        # 可以考虑 email 短信通知
+        # 可以考虑 email/短信 通知
         send_mail(current_gift.user.email, '有人想要一本书', 'email/get_gift.html',
                   wisher=current_user, gift=current_gift)
     giver = current_gift.user.summary
@@ -44,7 +43,8 @@ def pending():
     # 用filter可以实现复杂查询,or_改成'或'关系
     drifts = Drift.query.filter(
         or_(Drift.requester_id == current_user.id,
-            Drift.gifter_id == current_user.id)).order_by(desc(Drift.create_time)).all()
+            Drift.gifter_id == current_user.id)).order_by(
+        desc(Drift.create_time)).all()
 
     views = DriftCollection(drifts, current_user.id)
     return render_template('pending.html', drifts=views.data)
@@ -90,9 +90,11 @@ def mailed_drift(did):
         drift = Drift.query.filter_by(gifter_id=current_user.id, id=did).first_or_404()
         drift.pending = PendingStatus.Success
 
+        # 赠送完成
         gift = Gift.query.filter_by(id=drift.gift_id).first_or_404()
         gift.launched = True
 
+        # 心愿完成
         Wish.query.filter_by(uid=drift.requester_id,
                              isbn=drift.isbn, launched=False).update({Wish.launched: True})
         return redirect(url_for('web.pending'))
@@ -121,4 +123,5 @@ def save_drift(drift_form, current_gift):
         drift.isbn = book['isbn']
         # 扣除一个鱼豆,可以加一个判断是否为负数(报错)
         current_user.beans -= 1
+
         db.session.add(drift)

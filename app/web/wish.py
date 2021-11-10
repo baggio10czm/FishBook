@@ -31,6 +31,8 @@ def save_to_wish(isbn):
         with db.auto_commit():
             gift = Wish()
             gift.isbn = isbn
+            # flask_login 的 current_user 是用户对于的user模型
+            # 前后端分离项目,用户信息是保存在token中
             gift.uid = current_user.id
             db.session.add(gift)
     else:

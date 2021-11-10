@@ -44,6 +44,6 @@ class YuShuBook:
     def first(self):
         """
         更合理的api设计,返回调用方想要的、方便使用的数据
-        :return: 一本书的详情
+        直接返回一本书的详情,不需要 xxx.books[0]
         """
         return self.books[0] if self.total > 0 else None

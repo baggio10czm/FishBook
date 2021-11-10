@@ -3,7 +3,7 @@ from wtforms.validators import NumberRange, DataRequired, Length, Regexp
 
 
 class SearchForm(Form):
-    # 字符串验证 1-30位
+    # 字符串验证 1-30位  DataRequired() 防止输入空格
     q = StringField(validators=[DataRequired(), Length(min=1, max=30)])
     # 整数验证 1-99位  default默认值=1
     page = IntegerField(validators=[NumberRange(min=1, max=99)], default=1)

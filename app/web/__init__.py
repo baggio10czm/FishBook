@@ -10,6 +10,8 @@ def not_found(e):
     return render_template('404.html'), 404
 
 
+# app的init文件 导入(from app.web.book import web)
+# __init__ 自动导入以下模块
 from app.web import book
 from app.web import auth
 from app.web import drift
