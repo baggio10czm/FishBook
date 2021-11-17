@@ -15,7 +15,7 @@ class Drift(Base):
     recipient_name = Column(String(20), nullable=False)
     address = Column(String(100), nullable=False)
     message = Column(String(200))
-    mobile = Column(String(200), nullable=False)
+    mobile = Column(String(20), nullable=False)
 
     # 书籍信息
     isbn = Column(String(13))
